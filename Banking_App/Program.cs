@@ -10,6 +10,11 @@ namespace Banking_App
     {
         static void Main(string[] args)
         {
+            Login log = new Login();
+            log.LoginScreen();
+
+            MainMenu mm = new MainMenu();
+            mm.MenuScreen();
         }
     }
 }
