@@ -13,8 +13,6 @@ namespace Banking_App
             Login log = new Login();
             log.LoginScreen();
 
-            MainMenu mm = new MainMenu();
-            mm.MenuScreen();
         }
     }
 }
