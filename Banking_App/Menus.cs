@@ -11,8 +11,7 @@ namespace Banking_App
     {
         //Fields
         string userInput, firstName, lastName, address, email;
-        int userNumChoice, phoneNum;
-        int accNumber = 100000;
+        int userNumChoice, phoneNum, accNumber;
 
         public void MenuScreen()
         {
@@ -157,11 +156,11 @@ namespace Banking_App
                 string userInput = Console.ReadLine();
                 if(userInput == "y")
                 {
-                    accNumber += 1;
-                    Account newAcc = new Account(firstName, lastName, address, phoneNum, email, accNumber);
+                    //accNumber += 1;
+                    Account newAcc = new Account(firstName, lastName, address, phoneNum, email);
                     newAcc.CreateAccount();
                     Console.WriteLine("\n\t   Account Created! details will be provided via email");
-                    Console.Write("\t\t   Account number is: " + accNumber);
+                    Console.Write("\t\t   Account number is: " + newAcc.getAccountNumber());
                     Console.Write("\n\t\t Press 'enter' to return to the menu");
                     Console.ReadKey();
                     MenuScreen();
@@ -217,7 +216,64 @@ namespace Banking_App
 
         private void DepositMoney()
         {
-            throw new NotImplementedException();
+            Console.Clear();
+            Console.WriteLine("\t\t  -----------------------------------------");
+            Console.WriteLine("\t\t  |    \t         DEPOSIT     \t\t  |");
+            Console.WriteLine("\t\t  -----------------------------------------");
+            Console.WriteLine("\t\t  |    \t      ENTER THE DETAILS \t  |");
+            Console.Write("\t\t  |  \t\t\t\t\t  |");
+
+            Console.Write("\n\t\t  |    Account Number: ");
+            int cursorPosAccNumLeft = Console.CursorLeft;
+            int cursorPosAccNumTop = Console.CursorTop;
+            Console.WriteLine("\t\t\t  |");
+
+            Console.Write("\n\t\t  |    Amount: $");
+            int cursorPosAmountLeft = Console.CursorLeft;
+            int cursorPosAmountTop = Console.CursorTop;
+            Console.WriteLine("\t\t\t  |");
+
+            Console.WriteLine("\t\t  -----------------------------------------");
+
+            Console.SetCursorPosition(cursorPosAccNumLeft, cursorPosAccNumTop);
+            string accNumInput = Console.ReadLine();
+            int accNum;
+
+            if (accNumInput.Length < 10 && accNumInput.ToString().Length > 5 && (int.TryParse(accNumInput, out accNum)))
+            {
+                Account acc = new Account();
+                int value = acc.CheckAccount(accNum);
+                if (value == 0)
+                {
+                    Console.Write("\n\n\n\t\t   Account found! Enter the amount...");
+                    Console.SetCursorPosition(cursorPosAmountLeft, cursorPosAmountTop);
+                    string amountInput = Console.ReadLine();
+                    int amount;
+                    if (int.TryParse(amountInput, out amount)) {
+                        acc.Deposit(amount, accNum);
+                        Console.WriteLine("\n\n\n\t\t   Success! Press enter.");
+                        Console.ReadKey();
+                        MenuScreen();
+                    }
+                }
+                else
+                {
+                    DepositMoney();
+                }
+            }
+            else
+            {
+                Console.WriteLine("\n\n\n\t\t   Account not found! Account must be atleast 6 digits.");
+                Console.Write("\t\t   Retry (y/n)?");
+                string input = Console.ReadLine();
+                if (input == "y")
+                    DepositMoney();
+                else
+                    MenuScreen();
+            }
+
+
+
         }
 
         private void WithdrawMoney()
