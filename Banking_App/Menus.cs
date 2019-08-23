@@ -12,6 +12,7 @@ namespace Banking_App
         //Fields
         string userInput, firstName, lastName, address, email;
         int userNumChoice, phoneNum;
+        int accNumber = 100000;
 
         public void MenuScreen()
         {
@@ -93,27 +94,47 @@ namespace Banking_App
             Console.WriteLine("\t\t  -----------------------------------------");
             Console.WriteLine("\t\t  |    \t      ENTER THE DETAILS \t  |");
             Console.Write("\t\t  |  \t\t\t\t\t  |");
-            Console.WriteLine("\n\t\t  |  First Name: \t\t\t  |");
+
+            Console.Write("\n\t\t  |  First Name: ");
+            int cursorPosFirstNameLeft = Console.CursorLeft;
+            int cursorPosFirstNameTop = Console.CursorTop;
+            Console.Write("\t\t\t  |");
+
+            Console.Write("\n\t\t  |  Last Name: ");
+            int cursorPosLastNameLeft = Console.CursorLeft;
+            int cursorPosLastNameTop = Console.CursorTop;
+            Console.Write("\t\t\t  |");
 
 
-            Console.WriteLine("\t\t  |  Last Name: \t\t\t  |");
+            Console.Write("\n\t\t  |  Address: ");
+            int cursorPosAddressLeft = Console.CursorLeft;
+            int cursorPosAddressTop = Console.CursorTop;
+            Console.Write("\t\t\t\t  |");
+
+            Console.Write("\n\t\t  |  Phone: ");
+            int cursorPosPhoneLeft = Console.CursorLeft;
+            int cursorPosPhoneTop = Console.CursorTop;
+            Console.Write("\t\t\t\t  |");
 
 
-            Console.WriteLine("\t\t  |  Address: \t\t\t\t  |");
-
-
-            Console.WriteLine("\t\t  |  Phone: \t\t\t\t  |");
-
-
-            Console.WriteLine("\t\t  |  Email: \t\t\t\t  |");
+            Console.Write("\n\t\t  |  Email: ");
+            int cursorPosEmailLeft = Console.CursorLeft;
+            int cursorPosEmailTop = Console.CursorTop;
+            Console.WriteLine("\t\t\t\t  |");
 
 
             Console.WriteLine("\t\t  -----------------------------------------\n\n");
 
-
+            Console.SetCursorPosition(cursorPosFirstNameLeft, cursorPosFirstNameTop);
             firstName = Console.ReadLine();
+
+            Console.SetCursorPosition(cursorPosLastNameLeft, cursorPosLastNameTop);
             lastName = Console.ReadLine();
+
+            Console.SetCursorPosition(cursorPosAddressLeft, cursorPosAddressTop);
             address = Console.ReadLine();
+
+            Console.SetCursorPosition(cursorPosPhoneLeft, cursorPosPhoneTop);
             string phoneStringInput = Console.ReadLine();
             if(phoneStringInput.Length == 10 && int.TryParse(phoneStringInput, out phoneNum))
             {
@@ -121,14 +142,43 @@ namespace Banking_App
             }
             else
             {
-                Console.WriteLine("\n\n\n\n\t\t  Phone number incorrect.");
-                Console.WriteLine("\t\t  Please use numeric characters at a length no more than 10");
+                Console.WriteLine("\n\n\n\t\t\t  Phone number incorrect.");
+                Console.WriteLine("\t   Please use numeric characters at a length no more than 10");
                 Console.Write("\t\t\t Press 'enter' to retry.");
                 Console.ReadKey();
                 CreateAccount();
             }
-            //STILL NEED TO DO A FIELD CHECK FOR EMAIL------------------------------
+
+            Console.SetCursorPosition(cursorPosEmailLeft, cursorPosEmailTop);
             email = Console.ReadLine();
+            if(email.Contains('@') && (email.Contains("gmail.com") || email.Contains("outlook.com") || email.Contains("uts.edu.au")))
+            {
+                Console.Write("\n\n\n\t\t   Is this information correct (y/n)?");
+                string userInput = Console.ReadLine();
+                if(userInput == "y")
+                {
+                    accNumber += 1;
+                    Account newAcc = new Account(firstName, lastName, address, phoneNum, email, accNumber);
+                    newAcc.CreateAccount();
+                    Console.WriteLine("\n\t   Account Created! details will be provided via email");
+                    Console.Write("\t\t   Account number is: " + accNumber);
+                    Console.Write("\n\t\t Press 'enter' to return to the menu");
+                    Console.ReadKey();
+                    MenuScreen();
+                }else if (userInput == "n")
+                {
+                    CreateAccount();
+                }
+            }
+            else
+            {
+                Console.WriteLine("\n\n\n\t\t\t  Email incorrect.");
+                Console.WriteLine("\t  Please enter a vaild email with '@' and a domain. E.g. gmail.com.");
+                Console.Write("\t\t\t Press 'enter' to retry.");
+                Console.ReadKey();
+                CreateAccount();
+            }
+
             /* NEED TO LOOK INTO FILE OUTPUT FOR THE ACCOUNT INFO
              * POSSIBLY USE ANOTHER CLASS 'ACCOUNT.CLASS' TO HANDLE ACCOUNT CREATION
              */
@@ -136,7 +186,33 @@ namespace Banking_App
 
         private void SearchAccount()
         {
+            Console.Clear();
+            Console.WriteLine("\t\t  -----------------------------------------");
+            Console.WriteLine("\t\t  |    \t      SEARCH AN ACCOUNT\t\t  |");
+            Console.WriteLine("\t\t  -----------------------------------------");
+            Console.WriteLine("\t\t  |    \t      ENTER THE DETAILS \t  |");
+            Console.Write("\t\t  |  \t\t\t\t\t  |");
 
+            Console.Write("\n\t\t  |    Account Number: ");
+            int cursorPosAccNumLeft = Console.CursorLeft;
+            int cursorPosAccNumTop = Console.CursorTop;
+            Console.WriteLine("\t\t\t  |");
+
+            Console.WriteLine("\t\t  -----------------------------------------");
+
+            Console.SetCursorPosition(cursorPosAccNumLeft, cursorPosAccNumTop);
+            int accNumInput = Convert.ToInt32(Console.ReadLine());
+
+            Account acc = new Account();
+            int i = acc.SearchAccount(accNumInput);
+            if (i == 1)
+            {
+                SearchAccount();
+            }
+            else
+            {
+                MenuScreen();
+            }
         }
 
         private void DepositMoney()

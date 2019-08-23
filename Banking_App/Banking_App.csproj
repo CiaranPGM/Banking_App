@@ -43,6 +43,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Account.cs" />
     <Compile Include="Login.cs" />
     <Compile Include="Menus.cs" />
     <Compile Include="Program.cs" />
@@ -52,7 +53,11 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Database\login.txt" />
+    <Content Include="Database\Login\login.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Database\Accounts\" />
+    <Folder Include="Database\Transactions\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

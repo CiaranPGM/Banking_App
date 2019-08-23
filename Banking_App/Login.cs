@@ -15,7 +15,7 @@ namespace Banking_App
 
         public Login()
         {
-            loginPath = Path.GetFullPath("../../Database/login.txt");
+            loginPath = Path.GetFullPath("../../Database/Login/login.txt");
             loginInfo = System.IO.File.ReadAllLines(@loginPath);
         }
 
@@ -23,7 +23,7 @@ namespace Banking_App
         {
             Console.Clear();
             Console.WriteLine("\t\t  -----------------------------------------");
-            Console.WriteLine("\t\t  |    Welcome to Simple Banking System\t  |");
+            Console.WriteLine("\t\t  |    WELCOME TO SIMPLE BANKING SYSTEM\t  |");
             Console.WriteLine("\t\t  -----------------------------------------");
             Console.Write("\t\t  |\tEnter Username: ");
 
