@@ -4,6 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.IO;
+using System.Net;
+using System.Net.Mail;
+using System.Net.Mime;
 
 namespace Banking_App
 {
@@ -150,7 +153,7 @@ namespace Banking_App
 
             Console.SetCursorPosition(cursorPosEmailLeft, cursorPosEmailTop);
             email = Console.ReadLine();
-            if(email.Contains('@') && (email.Contains("gmail.com") || email.Contains("outlook.com") || email.Contains("uts.edu.au")))
+            if(email.Contains('@') && (email.Contains("gmail.com") || email.Contains("outlook.com") || email.Contains("uts.edu.au") || email.Contains("urhen.com")))
             {
                 Console.Write("\n\n\n\t\t   Is this information correct (y/n)?");
                 string userInput = Console.ReadLine();
@@ -200,17 +203,29 @@ namespace Banking_App
             Console.WriteLine("\t\t  -----------------------------------------");
 
             Console.SetCursorPosition(cursorPosAccNumLeft, cursorPosAccNumTop);
-            int accNumInput = Convert.ToInt32(Console.ReadLine());
-
-            Account acc = new Account();
-            int i = acc.SearchAccount(accNumInput);
-            if (i == 1)
+            string input = Console.ReadLine();
+            if (int.TryParse(input, out accNumber))
             {
-                SearchAccount();
+                Account acc = new Account();
+                int i = acc.SearchAccount(accNumber);
+                if (i == 1)
+                {
+                    SearchAccount();
+                }
+                else
+                {
+                    MenuScreen();
+                }
             }
             else
             {
-                MenuScreen();
+                Console.WriteLine("\n\t Incorrect input...Please enter a 6 digit account number. E.g '100000'");
+                Console.Write("\t\t Check another account (y/n)?");
+                string userInput = Console.ReadLine();
+                if (userInput == "y")
+                    SearchAccount();
+                else
+                    MenuScreen();
             }
         }
 
@@ -228,7 +243,9 @@ namespace Banking_App
             int cursorPosAccNumTop = Console.CursorTop;
             Console.WriteLine("\t\t\t  |");
 
-            Console.Write("\n\t\t  |    Amount: $");
+            Console.WriteLine("\t\t  |  \t\t\t\t\t  |");
+
+            Console.Write("\t\t  |    Amount: $");
             int cursorPosAmountLeft = Console.CursorLeft;
             int cursorPosAmountTop = Console.CursorTop;
             Console.WriteLine("\t\t\t  |");
@@ -251,7 +268,7 @@ namespace Banking_App
                     int amount;
                     if (int.TryParse(amountInput, out amount)) {
                         acc.Deposit(amount, accNum);
-                        Console.WriteLine("\n\n\n\t\t   Success! Press enter.");
+                        Console.Write("\n\n\n\t\t   Success! Press enter.");
                         Console.ReadKey();
                         MenuScreen();
                     }
@@ -271,19 +288,135 @@ namespace Banking_App
                 else
                     MenuScreen();
             }
-
-
-
         }
 
         private void WithdrawMoney()
         {
-            throw new NotImplementedException();
+            Console.Clear();
+            Console.WriteLine("\t\t  -----------------------------------------");
+            Console.WriteLine("\t\t  |    \t         WITHDRAW     \t\t  |");
+            Console.WriteLine("\t\t  -----------------------------------------");
+            Console.WriteLine("\t\t  |    \t      ENTER THE DETAILS \t  |");
+            Console.Write("\t\t  |  \t\t\t\t\t  |");
+
+            Console.Write("\n\t\t  |    Account Number: ");
+            int cursorPosAccNumLeft = Console.CursorLeft;
+            int cursorPosAccNumTop = Console.CursorTop;
+            Console.WriteLine("\t\t\t  |");
+
+            Console.WriteLine("\t\t  |  \t\t\t\t\t  |");
+
+            Console.Write("\t\t  |    Amount: $");
+            int cursorPosAmountLeft = Console.CursorLeft;
+            int cursorPosAmountTop = Console.CursorTop;
+            Console.WriteLine("\t\t\t  |");
+
+            Console.WriteLine("\t\t  -----------------------------------------");
+
+            Console.SetCursorPosition(cursorPosAccNumLeft, cursorPosAccNumTop);
+            string accNumInput = Console.ReadLine();
+            int accNum;
+
+            if (accNumInput.Length < 10 && accNumInput.ToString().Length > 5 && (int.TryParse(accNumInput, out accNum)))
+            {
+                Account acc = new Account();
+                int value = acc.CheckAccount(accNum);
+                if (value == 0)
+                {
+                    Console.Write("\n\n\n\t\t   Account found! Enter the amount...");
+                    Console.SetCursorPosition(cursorPosAmountLeft, cursorPosAmountTop);
+                    string amountInput = Console.ReadLine();
+                    int amount;
+                    if (int.TryParse(amountInput, out amount))
+                    {
+                        int outcome = acc.Withdraw(amount, accNum);
+                        if(outcome == 0)
+                        { 
+                            Console.Write("\n\n\n\t\t   Success! Press enter.");
+                            Console.ReadKey();
+                            MenuScreen();
+                        }
+                        else
+                        {
+                            Console.Write("\n\n\n\t\t   The amount you entered was too high. Press 'enter'.");
+                            Console.ReadKey();
+                            WithdrawMoney();
+                        }
+                    }
+                }
+                else
+                {
+                    WithdrawMoney();
+                }
+            }
+            else
+            {
+                Console.WriteLine("\n\n\n\t\t   Account not found! Account must be atleast 6 digits.");
+                Console.Write("\t\t   Retry (y/n)?");
+                string input = Console.ReadLine();
+                if (input == "y")
+                    WithdrawMoney();
+                else
+                    MenuScreen();
+            }
         }
 
         private void DisplayStatement()
         {
-            throw new NotImplementedException();
+            Console.Clear();
+            Console.WriteLine("\t\t  -----------------------------------------");
+            Console.WriteLine("\t\t  |    \t      STATEMENT\t\t  |");
+            Console.WriteLine("\t\t  -----------------------------------------");
+            Console.WriteLine("\t\t  |    \t      ENTER THE DETAILS \t  |");
+            Console.Write("\t\t  |  \t\t\t\t\t  |");
+
+            Console.Write("\n\t\t  |    Account Number: ");
+            int cursorPosAccNumLeft = Console.CursorLeft;
+            int cursorPosAccNumTop = Console.CursorTop;
+            Console.WriteLine("\t\t\t  |");
+
+            Console.WriteLine("\t\t  -----------------------------------------");
+
+            Console.SetCursorPosition(cursorPosAccNumLeft, cursorPosAccNumTop);
+            string accNumInput = Console.ReadLine();
+            int accNum;
+
+            if (accNumInput.Length < 10 && accNumInput.ToString().Length > 5 && (int.TryParse(accNumInput, out accNum)))
+            {
+                Account acc = new Account();
+                int value = acc.CheckAccount(accNum);
+                if (value == 0)
+                {
+                    Console.WriteLine("\n\n\t\t   Account found! Statement is displayed below...");
+                    acc.GenerateStatement(accNum);
+                    MenuScreen();
+
+                }
+                //string input = Console.ReadLine();
+                //if (int.TryParse(input, out accNumber))
+                //{
+                //    Account acc = new Account();
+                //    int i = acc.SearchAccount(accNumber);
+                //    if (i == 1)
+                //    {
+                //        SearchAccount();
+                //    }
+                //    else
+                //    {
+                //        MenuScreen();
+                //    }
+                //}
+                else
+                {
+                    Console.WriteLine("\n\t Incorrect input...Please enter a 6 digit account number. E.g '100000'");
+                    Console.Write("\t\t Check another account (y/n)?");
+                    string userInput = Console.ReadLine();
+                    if (userInput == "y")
+                        DisplayStatement();
+                    else
+                        MenuScreen();
+                }
+            }
         }
 
         private void DeleteAccount()

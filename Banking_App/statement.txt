@@ -1,0 +1,13 @@
+		  -----------------------------------------
+		  |    	    SIMPLE BANKING SYSTEM	  |
+		  -----------------------------------------
+		  |  Account Statement			  |
+		  |  					  |
+		  |  Account no: 100001			  |
+		  |  Account Balance: $1190		  |
+		  |  First Name: Ciaran			  |
+		  |  Last Name: Mullo		  |
+		  |  Address: 123 Fake St		  |
+		  |  Phone: 0412345556			  |
+		  |  Email: c@gmail.com		  |
+		  -----------------------------------------

@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.IO;
+using System.Net;
+using System.Net.Mail;
 
 namespace Banking_App
 {
@@ -40,14 +42,21 @@ namespace Banking_App
             DirectoryInfo d = new DirectoryInfo(@accountsPath);
             FileInfo[] files = d.GetFiles("*.txt");
             string str = "";
-            foreach(FileInfo file in files)
+            if (files.Length > 0)
             {
-                str += ", " + file.Name;
+                foreach (FileInfo file in files)
+                {
+                    str += ", " + file.Name;
+                }
+                string[] seperateStrings = { "txt", ",", ".", " " };
+                string[] accNums = str.Split(seperateStrings, System.StringSplitOptions.RemoveEmptyEntries);
+                accNumber = Convert.ToInt32(accNums[accNums.Length - 1]);
+                accNumber++;
             }
-            string[] seperateStrings = { "txt", ",", ".", " "};
-            string[] accNums = str.Split(seperateStrings, System.StringSplitOptions.RemoveEmptyEntries);
-            accNumber = Convert.ToInt32(accNums[accNums.Length - 1]);
-            accNumber++;
+            else
+            {
+                accNumber = 100001;
+            }
 
             //Creates the filepath for the file
             txtPath = Path.GetFullPath(accountsPath + "/" + accNumber + ".txt");
@@ -105,7 +114,7 @@ namespace Banking_App
                             return 0;
                     }
                 }
-                Console.WriteLine("\t\tAccount could not be found.");
+                Console.WriteLine("\n\n\t\tAccount could not be found.");
                 Console.Write("\t\t  Check another account? (y/n)?");
                 string input = Console.ReadLine();
                 if (input == "y")
@@ -145,12 +154,12 @@ namespace Banking_App
                 }
             }
 
-            Console.WriteLine("Couldn't find the account. Retry??");
-            Console.ReadKey();
+            Console.Write("\n\n\n\t\tCouldn't find the account. Press 'enter' to retry.");
+            Console.ReadLine();
             return 1;
         }
 
-        public int Deposit(int amount, int accNum)
+        public void Deposit(int amount, int accNum)
         {
             Transaction trans = new Transaction(accNumber, amount, "Deposit", DateTime.Now.ToString("DD/mm/yyy h:mm tt"));
             txtPath = Path.GetFullPath(accountsPath + "/" + accNum + ".txt");
@@ -160,7 +169,98 @@ namespace Banking_App
             balance += amount;
             lines[2] = balance.ToString();
             System.IO.File.WriteAllLines(txtPath, lines);
-            return 0;
+        }
+
+        public int Withdraw(int amount, int accNum)
+        {
+            Transaction trans = new Transaction(accNumber, amount, "Deposit", DateTime.Now.ToString("DD/mm/yyy h:mm tt"));
+            txtPath = Path.GetFullPath(accountsPath + "/" + accNum + ".txt");
+
+            string[] lines = File.ReadAllLines(txtPath);
+            int balance = Convert.ToInt32(lines[2]);
+            if (balance < amount)
+            {
+                return 1;
+            }
+            else
+            {
+                balance -= amount;
+                lines[2] = balance.ToString();
+                System.IO.File.WriteAllLines(txtPath, lines);
+                return 0;
+            }
+        }
+
+        public int GenerateStatement(int accNum)
+        {
+            //Transaction trans = new Transaction(accNumber, amount, "Deposit", DateTime.Now.ToString("DD/mm/yyy h:mm tt"));
+            txtPath = Path.GetFullPath(accountsPath + "/" + accNum + ".txt");
+
+            string[] lines = File.ReadAllLines(txtPath);
+            string[] statement =
+            {
+                "\t\t  -----------------------------------------",
+                "\t\t  |    \t    SIMPLE BANKING SYSTEM\t  |",
+                "\t\t  -----------------------------------------",
+                "\t\t  |  Account Statement\t\t\t  |",
+                "\t\t  |  \t\t\t\t\t  |",
+                "\t\t  |  Account no: " + accNum + "\t\t\t  |",
+                "\t\t  |  Account Balance: $" + lines[2] + "\t\t  |",
+                "\t\t  |  First Name: " + lines[0] + "\t\t\t  |",
+                "\t\t  |  Last Name: " + lines[1] + "\t\t  |",
+                "\t\t  |  Address: " + lines[3] + "\t\t  |",
+                "\t\t  |  Phone: 0" + lines[4] + "\t\t\t  |",
+                "\t\t  |  Email: " + lines[5] + "\t\t  |",
+                "\t\t  -----------------------------------------"
+
+            };
+
+            foreach(string str in statement)
+            {
+                Console.WriteLine(str);
+            }
+
+            /* HERE I WILL BE ADDING THE 5 MOST RECENT TRANSACTIONS FROM THE transPath VARIABLE ------------------------
+             * 
+             */
+
+
+
+            Console.Write("\n\t\t\tEmail Statement (y/n)?");
+            string awnser = Console.ReadLine();
+            if (awnser == "y") {
+                //Send email
+                string path1 = Path.GetFullPath("../..");
+                System.IO.File.WriteAllLines(@path1 + "/statement.txt", statement);
+
+
+
+                //Send the email
+                MailMessage mail = new MailMessage();
+                SmtpClient SmtpServer = new SmtpClient("smtp.gmail.com");
+                mail.From = new MailAddress("bankingsystem19@gmail.com");
+                mail.To.Add(lines[5]);
+                mail.Subject = "Banking Statement";
+                mail.Body = "Statement is attatched";
+
+                System.Net.Mail.Attachment attachment;
+                attachment = new System.Net.Mail.Attachment(path1 + "/statement.txt");
+                mail.Attachments.Add(attachment);
+
+                SmtpServer.Port = 587;
+                SmtpServer.DeliveryMethod = SmtpDeliveryMethod.Network;
+                SmtpServer.Credentials = new System.Net.NetworkCredential("bankingsystem19@gmail.com", "I_Love_UTS_123!@#");
+                SmtpServer.EnableSsl = true;
+
+                SmtpServer.Send(mail);
+
+                Console.Write("\n\t\tEmail sent successfully!...");
+                Console.Write("\n\t\t   Press 'enter'.");
+                Console.ReadKey();
+                return 1;
+            }
+            else
+                return 0;
         }
 
 
