@@ -64,6 +64,7 @@ namespace Banking_App
                         DeleteAccount();
                         break;
                     case 7:
+                        Console.WriteLine("\n\n");
                         Exit();
                         break;
                     default:
@@ -153,13 +154,12 @@ namespace Banking_App
 
             Console.SetCursorPosition(cursorPosEmailLeft, cursorPosEmailTop);
             email = Console.ReadLine();
-            if(email.Contains('@') && (email.Contains("gmail.com") || email.Contains("outlook.com") || email.Contains("uts.edu.au") || email.Contains("urhen.com")))
+            if(email.Contains('@') && (email.Contains("gmail.com") || email.Contains("outlook.com") || email.Contains("uts.edu.au") || email.Contains("hotmail.com")))
             {
                 Console.Write("\n\n\n\t\t   Is this information correct (y/n)?");
                 string userInput = Console.ReadLine();
                 if(userInput == "y")
                 {
-                    //accNumber += 1;
                     Account newAcc = new Account(firstName, lastName, address, phoneNum, email);
                     newAcc.CreateAccount();
                     Console.WriteLine("\n\t   Account Created! details will be provided via email");
@@ -180,10 +180,6 @@ namespace Banking_App
                 Console.ReadKey();
                 CreateAccount();
             }
-
-            /* NEED TO LOOK INTO FILE OUTPUT FOR THE ACCOUNT INFO
-             * POSSIBLY USE ANOTHER CLASS 'ACCOUNT.CLASS' TO HANDLE ACCOUNT CREATION
-             */
         }
 
         private void SearchAccount()
@@ -365,7 +361,7 @@ namespace Banking_App
         {
             Console.Clear();
             Console.WriteLine("\t\t  -----------------------------------------");
-            Console.WriteLine("\t\t  |    \t      STATEMENT\t\t  |");
+            Console.WriteLine("\t\t  |    \t      STATEMENT\t\t\t  |");
             Console.WriteLine("\t\t  -----------------------------------------");
             Console.WriteLine("\t\t  |    \t      ENTER THE DETAILS \t  |");
             Console.Write("\t\t  |  \t\t\t\t\t  |");
@@ -392,20 +388,6 @@ namespace Banking_App
                     MenuScreen();
 
                 }
-                //string input = Console.ReadLine();
-                //if (int.TryParse(input, out accNumber))
-                //{
-                //    Account acc = new Account();
-                //    int i = acc.SearchAccount(accNumber);
-                //    if (i == 1)
-                //    {
-                //        SearchAccount();
-                //    }
-                //    else
-                //    {
-                //        MenuScreen();
-                //    }
-                //}
                 else
                 {
                     Console.WriteLine("\n\t Incorrect input...Please enter a 6 digit account number. E.g '100000'");
@@ -417,16 +399,65 @@ namespace Banking_App
                         MenuScreen();
                 }
             }
+            else
+            {
+                Console.WriteLine("\n\n\n\t\t   Account not found! Account must be atleast 6 digits.");
+                Console.Write("\t\t   Retry (y/n)?");
+                string input = Console.ReadLine();
+                if (input == "y")
+                    DisplayStatement();
+                else
+                    MenuScreen();
+            }
         }
 
         private void DeleteAccount()
         {
-            throw new NotImplementedException();
+            Console.Clear();
+            Console.WriteLine("\t\t  -----------------------------------------");
+            Console.WriteLine("\t\t  |    \t      DELETE AN ACCOUNT\t\t  |");
+            Console.WriteLine("\t\t  -----------------------------------------");
+            Console.WriteLine("\t\t  |    \t      ENTER THE DETAILS \t  |");
+            Console.Write("\t\t  |  \t\t\t\t\t  |");
+
+            Console.Write("\n\t\t  |    Account Number: ");
+            int cursorPosAccNumLeft = Console.CursorLeft;
+            int cursorPosAccNumTop = Console.CursorTop;
+            Console.WriteLine("\t\t\t  |");
+
+            Console.WriteLine("\t\t  -----------------------------------------");
+
+            Console.SetCursorPosition(cursorPosAccNumLeft, cursorPosAccNumTop);
+            string accNumInput = Console.ReadLine();
+            int accNum;
+
+            if (accNumInput.Length < 10 && accNumInput.ToString().Length > 5 && (int.TryParse(accNumInput, out accNum)))
+            {
+                Account acc = new Account();
+                int value = acc.CheckAccount(accNum);
+                if (value == 0)
+                {
+                    Console.WriteLine("\n\n\t\t   Account found! Details displayed below...");
+                    acc.SearchAccountDetails(accNum);
+                    MenuScreen();
+                }
+                else { DeleteAccount(); }
+            }
+            else
+            {
+                Console.WriteLine("\n\n\n\t\t   Account not found! Account must be atleast 6 digits.");
+                Console.Write("\t\t   Retry (y/n)?");
+                string input = Console.ReadLine();
+                if (input == "y")
+                    DeleteAccount();
+                else
+                    MenuScreen();
+            }
         }
 
         private void Exit()
         {
-            throw new NotImplementedException();
+            Environment.Exit(0);
         }
     }
 }

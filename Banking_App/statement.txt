@@ -3,11 +3,11 @@
 		  -----------------------------------------
 		  |  Account Statement			  |
 		  |  					  |
-		  |  Account no: 100001			  |
-		  |  Account Balance: $1190		  |
-		  |  First Name: Ciaran			  |
-		  |  Last Name: Mullo		  |
-		  |  Address: 123 Fake St		  |
-		  |  Phone: 0412345556			  |
-		  |  Email: c@gmail.com		  |
+		  |  Account no: 100002			  |
+		  |  Account Balance: $1000		  |
+		  |  First Name: c			  |
+		  |  Last Name: cc		  |
+		  |  Address: c		  |
+		  |  Phone: 0428401993			  |
+		  |  Email: 12936833@student.uts.edu.au		  |
 		  -----------------------------------------

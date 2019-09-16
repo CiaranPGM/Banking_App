@@ -71,11 +71,28 @@ namespace Banking_App
                 file.Delete();
             }
 
-            //if (Directory.Exists(transPath + "/" + accNumber))
-            //{
-            //    di.Delete();
-            //    Directory.CreateDirectory(@transPath + "/" + accNumber);
-            //}
+            //THIS NEXT BLOCK IS COMMENTED OUT BECAUSE I RAN INTO ISSUES RIGHT BEFORE SUBMISSION
+            //THE EMAIL FUNCTIONALITY CAN BE VIEWED IN A/C STATEMENT
+
+            //Emailing the account details
+            //MailMessage mail = new MailMessage();
+            //SmtpClient SmtpServer = new SmtpClient("smtp.gmail.com");
+            //mail.From = new MailAddress("bankingsystem19@gmail.com");
+            //mail.To.Add(lines[5]);
+            //mail.Subject = "Banking Statement";
+            //mail.Body = "Statement is attatched";
+
+            //System.Net.Mail.Attachment attachment;
+            //attachment = new System.Net.Mail.Attachment(txtPath);
+            //mail.Attachments.Add(attachment);
+
+            //SmtpServer.Port = 587;
+            //SmtpServer.DeliveryMethod = SmtpDeliveryMethod.Network;
+            //SmtpServer.Credentials = new System.Net.NetworkCredential("bankingsystem19@gmail.com", "I_Love_UTS_123!@#");
+            //SmtpServer.EnableSsl = true;
+
+            //SmtpServer.Send(mail);
+            //SmtpServer.Dispose();
 
         }
 
@@ -161,7 +178,6 @@ namespace Banking_App
 
         public void Deposit(int amount, int accNum)
         {
-            Transaction trans = new Transaction(accNumber, amount, "Deposit", DateTime.Now.ToString("DD/mm/yyy h:mm tt"));
             txtPath = Path.GetFullPath(accountsPath + "/" + accNum + ".txt");
             
             string[] lines = File.ReadAllLines(txtPath);
@@ -169,11 +185,12 @@ namespace Banking_App
             balance += amount;
             lines[2] = balance.ToString();
             System.IO.File.WriteAllLines(txtPath, lines);
+            Transaction trans = new Transaction(accNum, amount, "Deposit", DateTime.Now.ToString("dd/MM/yyy h:mm tt"));
+            trans.Add(transPath);
         }
 
         public int Withdraw(int amount, int accNum)
         {
-            Transaction trans = new Transaction(accNumber, amount, "Deposit", DateTime.Now.ToString("DD/mm/yyy h:mm tt"));
             txtPath = Path.GetFullPath(accountsPath + "/" + accNum + ".txt");
 
             string[] lines = File.ReadAllLines(txtPath);
@@ -187,13 +204,14 @@ namespace Banking_App
                 balance -= amount;
                 lines[2] = balance.ToString();
                 System.IO.File.WriteAllLines(txtPath, lines);
+                Transaction trans = new Transaction(accNum, amount, "Withdraw", DateTime.Now.ToString("dd/MM/yyy h:mm tt"));
+                trans.Add(transPath);
                 return 0;
             }
         }
 
         public int GenerateStatement(int accNum)
         {
-            //Transaction trans = new Transaction(accNumber, amount, "Deposit", DateTime.Now.ToString("DD/mm/yyy h:mm tt"));
             txtPath = Path.GetFullPath(accountsPath + "/" + accNum + ".txt");
 
             string[] lines = File.ReadAllLines(txtPath);
@@ -220,9 +238,25 @@ namespace Banking_App
                 Console.WriteLine(str);
             }
 
-            /* HERE I WILL BE ADDING THE 5 MOST RECENT TRANSACTIONS FROM THE transPath VARIABLE ------------------------
-             * 
-             */
+
+            DirectoryInfo d = new DirectoryInfo(@transPath + "/" + accNum);
+            FileInfo[] files = d.GetFiles("*.txt");
+            int count = 0;
+            foreach (FileInfo file in files)
+            {
+                if (count <= 4) { 
+                    string[] fileLines = File.ReadAllLines(transPath + "/" + accNum + "/" + file.ToString());
+                    Console.WriteLine("\t\t  -----------------------------------------");
+                    Console.WriteLine("\t\t  |  \t\t  " + fileLines[0] + "\t\t  |");
+                    Console.WriteLine("\t\t  -----------------------------------------");
+                    Console.WriteLine("\t\t  |  " + fileLines[1] + "\t\t  |");
+                    Console.WriteLine("\t\t  |  Account Number: " + fileLines[2] + "\t\t  |");
+                    Console.WriteLine("\t\t  |  Amount: $" + fileLines[3] + "\t\t\t  |");
+                    Console.WriteLine("\t\t  -----------------------------------------");
+                    count++;
+                }
+
+            }
 
 
 
@@ -263,6 +297,56 @@ namespace Banking_App
                 return 0;
         }
 
+        public int SearchAccountDetails(int accountNum)
+        {
+            if (accountNum.ToString().Length < 10 && accountNum.ToString().Length > 5 && (int.TryParse(accountNum.ToString(), out accountNum)))
+            {
+                string[] files = Directory.GetFiles(accountsPath);
+                for (int it = 0; it < files.Length; it++)
+                {
+                    if (files[it].Contains(accountNum.ToString()))
+                    {
+                        string[] file = File.ReadAllLines(accountsPath + "/" + accountNum + ".txt");
+                        Console.WriteLine("\t\t  -----------------------------------------");
+                        Console.WriteLine("\t\t  |    \t    ACCOUNT DETAILS\t\t  |");
+                        Console.WriteLine("\t\t  -----------------------------------------");
+                        Console.WriteLine("\t\t  |  \t\t\t\t\t  |");
+                        Console.WriteLine("\t\t  |  Account no: " + accountNum + "\t\t\t  |");
+                        Console.WriteLine("\t\t  |  Account Balance: $" + file[2] + "\t\t  |");
+                        Console.WriteLine("\t\t  |  First Name: " + file[0] + "\t\t\t  |");
+                        Console.WriteLine("\t\t  |  Last Name: " + file[1] + "\t\t  |");
+                        Console.WriteLine("\t\t  |  Address: " + file[3] + "\t\t  |");
+                        Console.WriteLine("\t\t  |  Phone: " + file[4] + "\t\t\t  |");
+                        Console.WriteLine("\t\t  |  Email: " + file[5] + "\t\t  |");
+
+
+                        Console.Write("\t\t  |  \t\t\t\t\t  |");
+                        Console.WriteLine("\n\t\t  -----------------------------------------");
+
+                        Console.Write("\n\t\t\tDelete account (y/n)?");
+                        string awnser = Console.ReadLine();
+                        if (awnser == "y")
+                        {
+                            File.Delete(accountsPath + "/" + accountNum + ".txt");
+                            Directory.Delete(transPath + "/" + accountNum, true);
+                            Console.Write("\n\t\t\tAccount Deleted...");
+                            Console.ReadLine();
+                            return 1;
+                        }
+                        else
+                            return 0;
+                    }
+                }
+                Console.WriteLine("\n\n\t\tAccount could not be found.");
+                Console.Write("\t\t  Check another account? (y/n)?");
+                string input = Console.ReadLine();
+                if (input == "y")
+                    return 1;
+                else
+                    return 0;
+            }
+            return 0;
+        }
 
         public int getAccountNumber()
         {
